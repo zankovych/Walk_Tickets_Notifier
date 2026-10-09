@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Квиток на прогулянку</title>
+<meta name="description" content="Тобі оформлено квиток. Відкрий 🎫">
+<meta property="og:title" content="Квиток на прогулянку 🎫">
+<meta property="og:description" content="Тобі оформлено квиток. Відкрий і підтверди.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎫</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<main>
+
+  <!-- 1. Квиток-обкладинка -->
+  <section class="screen is-active" id="s-cover">
+    <div class="kicker">тобі оформлено квиток</div>
+    <article class="ticket">
+      <div class="t-body">
+        <header class="t-head">
+          <div class="logo"><span class="logo-mark" aria-hidden="true">✦</span><span data-t="airline"></span></div>
+          <div class="t-kind">Посадковий талон</div>
+        </header>
+
+        <div class="t-main">
+          <div class="route">
+            <div class="pt">
+              <div class="f-l">Звідки</div>
+              <div class="pt-v" data-t="routeFrom"></div>
+            </div>
+            <div class="route-line" aria-hidden="true">
+              <svg class="walker" viewBox="0 0 24 24"><circle cx="13" cy="4" r="2"/><path d="M10.5 22l1.6-6.4 2.4 2.4V22h2v-5.5l-2.6-2.6.8-3.6c1 1.2 2.6 2.1 4.3 2.2v-2c-1.4-.1-2.6-.9-3.2-2l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5 0-.8.1L7 6.8V11h2V8.1l1.8-.7-1.4 7.1-4.1-.8-.4 2 6 1.2z"/></svg>
+            </div>
+            <div class="pt pt-r">
+              <div class="f-l">Куди</div>
+              <div class="pt-v">???</div>
+            </div>
+          </div>
+
+          <div class="fields">
+            <div class="f"><div class="f-l">Пасажир</div><div class="f-v" data-t="to"></div></div>
+            <div class="f"><div class="f-l">Клас</div><div class="f-v" data-t="travelClass"></div></div>
+            <div class="f"><div class="f-l">Місце</div><div class="f-v" data-t="seat"></div></div>
+            <div class="f"><div class="f-l">Тривалість</div><div class="f-v" data-t="duration"></div></div>
+            <div class="f wide"><div class="f-l">Статус</div><div class="f-v status"><i class="dot"></i>чекає на твоє «так»</div></div>
+          </div>
+        </div>
+
+        <div class="t-stub perf">
+          <div class="barcode" aria-hidden="true"></div>
+          <button class="btn btn-primary btn-block" data-go="s-letter">Відкрити запрошення</button>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- 2. Лист і питання -->
+  <section class="screen" id="s-letter">
+    <article class="ticket">
+      <div class="t-body">
+        <header class="t-head">
+          <div class="logo"><span class="logo-mark" aria-hidden="true">✦</span><span data-t="airline"></span></div>
+          <div class="t-kind">Запрошення</div>
+        </header>
+        <div class="t-main perf letter">
+          <div class="eyebrow">Повідомлення від <span data-t="fromGenitive"></span></div>
+          <h1><span data-t="toVocative"></span>, привіт!</h1>
+          <div id="letter-text"></div>
+          <p class="soft" data-t="letterSoft"></p>
+          <div class="sign">— <span data-t="from"></span></div>
+
+          <h2 class="q" data-t="question"></h2>
+          <div class="answer-row" id="answer-row">
+            <span class="yes-wrap" id="yes-wrap"><button class="btn btn-primary btn-yes" id="yes" data-t="yesLabel"></button></span>
+            <button class="btn btn-ghost btn-no" id="no"></button>
+          </div>
+          <div class="teaser" id="teaser" aria-live="polite"></div>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- 3. Оформлення -->
+  <section class="screen" id="s-choose">
+    <article class="ticket">
+      <div class="t-body">
+        <header class="t-head">
+          <div class="logo"><span class="logo-mark" aria-hidden="true">✦</span><span data-t="airline"></span></div>
+          <div class="t-kind">Оформлення</div>
+        </header>
+        <div class="t-main perf">
+          <div class="eyebrow">Ура! Залишилось оформити квиток</div>
+          <h1>Обирай <em>куди</em> й <em>коли</em></h1>
+
+          <div class="step"><span class="step-n">01</span>Маршрут</div>
+          <div class="cards" id="g-place" role="radiogroup" aria-label="Куди йдемо"></div>
+
+          <div class="step"><span class="step-n">02</span>Відправлення</div>
+          <div class="chips" id="g-when" role="radiogroup" aria-label="Коли"></div>
+
+          <div class="step"><span class="step-n">03</span>Бортове меню</div>
+          <div class="chips" id="g-treat" role="radiogroup" aria-label="Що беремо по дорозі"></div>
+
+          <div class="step"><span class="step-n">04</span>Побажання</div>
+          <textarea class="input" id="comment" rows="2" maxlength="500" placeholder="Що завгодно: о котрій зручно, що не любиш, побажання…"></textarea>
+
+          <button class="btn btn-primary btn-block go" id="confirm" disabled>Підтвердити квиток</button>
+          <div class="hint" id="hint"></div>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- 4. Надрукований квиток -->
+  <section class="screen" id="s-done">
+    <div class="printer" aria-hidden="true"><span></span></div>
+    <div class="print-clip">
+      <article class="ticket printed">
+        <div class="t-body">
+          <header class="t-head">
+            <div class="logo"><span class="logo-mark" aria-hidden="true">✦</span><span data-t="airline"></span></div>
+            <div class="t-kind">Посадковий талон</div>
+          </header>
+          <div class="t-main">
+            <div class="route">
+              <div class="pt">
+                <div class="f-l">Звідки</div>
+                <div class="pt-v" data-t="routeFrom"></div>
+              </div>
+              <div class="route-line" aria-hidden="true">
+                <svg class="walker" viewBox="0 0 24 24"><circle cx="13" cy="4" r="2"/><path d="M10.5 22l1.6-6.4 2.4 2.4V22h2v-5.5l-2.6-2.6.8-3.6c1 1.2 2.6 2.1 4.3 2.2v-2c-1.4-.1-2.6-.9-3.2-2l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5 0-.8.1L7 6.8V11h2V8.1l1.8-.7-1.4 7.1-4.1-.8-.4 2 6 1.2z"/></svg>
+              </div>
+              <div class="pt pt-r">
+                <div class="f-l">Куди</div>
+                <div class="pt-v" id="dest-name"></div>
+              </div>
+            </div>
+
+            <div class="fields">
+              <div class="f"><div class="f-l">Пасажир</div><div class="f-v" data-t="to"></div></div>
+              <div class="f"><div class="f-l">Місце</div><div class="f-v" data-t="seat"></div></div>
+              <div class="f wide"><div class="f-l">Відправлення</div><div class="f-v" id="r-when"></div></div>
+              <div class="f wide"><div class="f-l">На борту</div><div class="f-v" id="r-treat"></div></div>
+              <div class="f wide" id="r-comment-wrap" hidden><div class="f-l">Побажання</div><div class="f-v soft-v" id="r-comment"></div></div>
+              <div class="f"><div class="f-l">Клас</div><div class="f-v" data-t="travelClass"></div></div>
+              <div class="f"><div class="f-l">Тривалість</div><div class="f-v" data-t="duration"></div></div>
+            </div>
+          </div>
+
+          <div class="t-stub perf">
+            <div class="stamp">Підтверджено</div>
+            <div class="barcode" aria-hidden="true"></div>
+            <div class="send" id="send" data-state="sending">
+              <span class="send-ico" aria-hidden="true"></span>
+              <span class="send-text" id="send-text">Надсилаю…</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+    <div class="done-actions">
+      <button class="link" data-go="s-choose">змінити вибір</button>
+    </div>
+  </section>
+
+</main>
+
+<script src="env.js"></script>
+<script src="config.js"></script>
+<script src="names.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
