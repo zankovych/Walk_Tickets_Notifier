@@ -77,6 +77,7 @@
   /* ---------- Так / Ні ---------- */
   var yes = $('#yes'), yesWrap = $('#yes-wrap'), no = $('#no'), teaser = $('#teaser');
   var yesScale = 1;
+  var lastDodge = 0;
   var pointer = { x: -999, y: -999 };
   function trackPointer(e) { pointer.x = e.pageX; pointer.y = e.pageY; }
   document.addEventListener('pointermove', trackPointer, { passive: true });
@@ -88,6 +89,12 @@
   no.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') dodge(); });
 
   function dodge() {
+    // Мишка: кнопка тікає вже від наведення, а клік, що прилетів слідом, поки вона
+    // ще в польоті, не має рахуватися як друга спроба
+    var now = Date.now();
+    if (now - lastDodge < 450) return;
+    lastDodge = now;
+
     state.noClicks++;
     var n = state.noClicks;
     teaser.textContent = C.teasers[Math.min(n, C.teasers.length) - 1] || '';
