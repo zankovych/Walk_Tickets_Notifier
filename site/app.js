@@ -66,7 +66,7 @@
     if (no.classList.contains('flying')) no.hidden = id !== 's-letter';
     updateCuts();
     window.scrollTo(0, 0);
-    if (id === 's-letter') burst(40);
+    if (id === 's-letter') { burst(40); notifyOpen(); }
     if (id === 's-choose') { burst(70); validate(); }
     if (id === 's-done') { finish(); setTimeout(function () { burst(110); }, 2100); }
   }
@@ -379,10 +379,19 @@
       .finally(function () { clearTimeout(timer); });
   }
 
-  if (C.NOTIFY_ON_OPEN && C.API_URL) {
-    var seen = false;
-    try { seen = sessionStorage.getItem('opened') === '1'; sessionStorage.setItem('opened', '1'); } catch (e) {}
-    if (!seen) send({ type: 'open', test: isTest, to: C.to });
+  // «Відкрила запрошення» — тільки після натискання кнопки, а не при завантаженні
+  // сторінки: месенджери самі відкривають посилання для прев'ю, і це давало дублі.
+  // Один пристрій повідомляє лише раз (у тестовому режимі — щоразу).
+  var openNotified = false;
+  function notifyOpen() {
+    if (!C.NOTIFY_ON_OPEN || openNotified) return;
+    openNotified = true;
+    var key = 'opened:' + C.to;
+    try {
+      if (!isTest && localStorage.getItem(key)) return;
+      localStorage.setItem(key, '1');
+    } catch (e) {}
+    send({ type: 'open', test: isTest, to: C.to });
   }
 
   /* ---------- Конфеті ---------- */
